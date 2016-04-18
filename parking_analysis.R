@@ -5,7 +5,10 @@ main <- function(){
   
   # Load Parking Data
   if(!exists("park_data")){
-    park_data <- read.table(file="data/Parking_Lot_Counts.csv", sep=",", header=TRUE, stringsAsFactors=FALSE)
+    data_files <- paste("data/",dir(path="data/", pattern="santa_monica.*"), sep = "")
+    data_table_list <- lapply(data_files, read.table, header=TRUE, sep=",", stringsAsFactors=FALSE)
+    park_data <- ldply(data_table_list, .fun=rbind) # combine data sets into one dataframe
+    park_data <- subset(park_data, select=-c(X)) # drop added index column
   }
   
   park_data <- dateStrToPosix(park_data)
@@ -13,12 +16,17 @@ main <- function(){
   park_data <- addWeekdayColumn(park_data)
 
   getAvgDailyAvailabilityPlot(park_data)
-  assign("park_data", park_data)
+  #assign("park_data", park_data, envir = .GlobalEnv) # assign data to global variable
+  
+  ## Other Plots
+  #getAvgDailyAvailabilityHist(park_data) # histogram
+  getAvgPerWeekdayPlot(park_data)
+  
 }
 
 dateStrToPosix <- function(data){
   # Extract POSIX datetime from Date.Time character string
-  data$Date.Time <- parse_date_time(data$Date.Time,"%m/%d/%Y %I:%M:%S %p", tz="America/Los_Angeles")
+  data$Date.Time <- parse_date_time(data$Date.Time,"%Y/%m/%d %H!:%M:%S", tz="America/Los_Angeles")
   return(data)
 }
 
@@ -36,8 +44,8 @@ addTimeColumns <- function(data){
 }
 
 addWeekdayColumn <- function(data){
-  weekday_data$weekday <- weekdays(weekday_data$Date.Time)
-  return(weekday_data)
+  data$weekday <- weekdays(data$Date.Time)
+  return(data)
 }
 
 getAvgDailyAvailability <- function(data){
@@ -82,28 +90,60 @@ getAvgPerWeekdayPlot <- function(data){
   return(week_plot)
 }
 
-getAllWeekdayPlots <- function(weekday_data){
-  ### Generate Plot for Each Weekday
+## General Weekday Plot function
+getWeekdayPlot <- function(data, weekday_name){
+  ### Generate Plot for a given weekday
   weekday_strs <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
   
-  for(weekday in weekday_strs){
-    ### The weekday's Avg Availbaility
-    day_data <- weekday_data[weekday_data$weekday == weekday,]
-    
-    # remove month/day/year data from datetime objects - for plotting
-    time_str <- strftime(day_data$Date.Time, format="%H:%M:%S") #convert weekday times to strings
-    time_only <- as.POSIXct(time_str, format="%H:%M:%S") # only extract hr/min/sec info from time strings
-    day_data$time <- time_only
-    available_sat <- ddply(day_data, c("time"), summarise, mean=mean(Available)) # avg availability per time of day
-  
-    # create plot
-    day_plot_name <- paste(weekday, "_plot", sep="")
-    day_plot <- ggplot(available_sat) + geom_point(aes(x=time, y=mean))
-    
-    # add labels
-    day_title <- paste(weekday, " Parking Availability", sep=" ")
-    day_plot <- day_plot + labs(title=day_title, x="Time of Day", y="Total Available Spots")
-    
-    assign(day_plot_name, day_plot)
+  if(!(weekday_name %in% weekday_strs)){
+    return(NULL)
   }
+  ### The weekday's Avg Availbaility
+  day_data <- data[data$weekday == weekday,]
+  
+  # remove month/day/year data from datetime objects - for plotting
+  time_str <- strftime(day_data$Date.Time, format="%H:%M:%S") #convert weekday times to strings
+  time_only <- as.POSIXct(time_str, format="%H:%M:%S") # only extract hr/min/sec info from time strings
+  day_data$time <- time_only
+  available_day <- ddply(day_data, c("time"), summarise, mean=mean(Available)) # avg availability per time of day
+
+  # create plot
+  day_plot_name <- paste(weekday_name, "_plot", sep="")
+  day_plot <- ggplot(available_day) + geom_point(aes(x=time, y=mean))
+  
+  # add labels
+  day_title <- paste(weekday_name, "Parking Availability", sep=" ")
+  day_plot <- day_plot + labs(title=day_title, x="Time of Day", y="Total Available Spots")
+  
+  return(day_plot)
+}
+
+## Weekday Plots
+
+getMondayPlot <- function(data){
+  getWeekdayPlot(data, "Monday")
+}
+
+getTuesdayPlot <- function(data){
+  getWeekdayPlot(data, "Tuesday")
+}
+
+getWednesdayPlot <- function(data){
+  getWeekdayPlot(data, "Wednesday")
+}
+
+getThursdayPlot <- function(data){
+  getWeekdayPlot(data, "Thursday")
+}
+
+getFridayPlot <- function(data){
+  getWeekdayPlot(data, "Friday")
+}
+
+getSaturdayPlot <- function(data){
+  getWeekdayPlot(data, "Saturday")
+}
+
+getSundayPlot <- function(data){
+  getWeekdayPlot(data, "Sunday")
 }
