@@ -3,4 +3,5 @@
 .RData
 .Ruserdata
 *.Rproj
+*.swp
 data/Parking_Lot_Counts.csv
