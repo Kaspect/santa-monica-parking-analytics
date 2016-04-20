@@ -13,6 +13,18 @@ main <- function(){
   
 }
 
+install_libraries <- function(){
+  if(!require(ggplot2)){
+    install.packages("ggplot2", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  }
+  if(!require(plyr)){
+    install.packages("plyr", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  }
+  if(!require(lubridate)){
+    install.packages("lubridate", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  }
+}
+
 loadData <- function(){
   # Load Parking Data
   if(!exists("park_data")){

@@ -12,18 +12,19 @@
 %% a chunk with default options
 %% begin.rcode echo=FALSE
 % source("parking_analysis.r")
+% install_libraries()
 % options(scipen = 999)
 %	parking_data <- loadData()
 %% end.rcode
 
 %% a chunk with default options
 %% begin.rcode warning=FALSE, echo =FALSE, dev='my_pdf', fig.ext='pdf', fig.width = 8, fig.height = 8
-% getAvgPerWeekdayPlot(park_data)
+% getAvgPerWeekdayPlot(parking_data)
 %% end.rcode
 
 %% a chunk with default options
 %% begin.rcode warning=FALSE, echo =FALSE, dev='my_pdf', fig.ext='pdf', fig.width = 8, fig.height = 8
-% getHourlyBoxplot(park_data)
+% getHourlyBoxplot(parking_data)
 %% end.rcode
 
 --Kaspect Labs (John, Brian, Max, Nick and Shuming)
