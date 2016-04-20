@@ -11,7 +11,7 @@
 
 %% a chunk with default options
 %% begin.rcode echo=FALSE
-% source("parking_analysis.r")
+% source("parking_analysis.R")
 % options(scipen = 999)
 %	parking_data <- loadData()
 %% end.rcode
