@@ -114,7 +114,7 @@ getAvgPerWeekdayPlot <- function(data){
 isWeekday <- function(weekday){
   weekday_strs <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
   
-  if(weekday_name %in% weekday_strs){
+  if(weekday %in% weekday_strs){
     return(TRUE)
   }
   return(FALSE)
