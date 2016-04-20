@@ -1,19 +1,8 @@
+require(ggplot2)
+require(plyr)
+require(lubridate)
+
 main <- function(){
-  require(ggplot2)
-  require(plyr)
-  require(lubridate)
-  
-  # Load Parking Data
-  if(!exists("park_data")){
-    data_files <- paste("data/",dir(path="data/", pattern="santa_monica.*"), sep = "")
-    data_table_list <- lapply(data_files, read.table, header=TRUE, sep=",", stringsAsFactors=FALSE)
-    park_data <- ldply(data_table_list, .fun=rbind) # combine data sets into one dataframe
-    park_data <- subset(park_data, select=-c(X)) # drop added index column
-  }
-  
-  park_data <- dateStrToPosix(park_data)
-  park_data <- addTimeColumns(park_data)
-  park_data <- addWeekdayColumn(park_data)
 
   getAvgDailyAvailabilityPlot(park_data)
   #assign("park_data", park_data, envir = .GlobalEnv) # assign data to global variable
@@ -22,6 +11,23 @@ main <- function(){
   #getAvgDailyAvailabilityHist(park_data) # histogram
   getAvgPerWeekdayPlot(park_data)
   
+}
+
+loadData <- function(){
+  # Load Parking Data
+  if(!exists("park_data")){
+    data_files <- paste("data/",dir(path="data/", pattern="santa_monica.*"), sep = "")
+    data_table_list <- lapply(data_files, read.table, header=TRUE, sep=",", stringsAsFactors=FALSE)
+    park_data <- ldply(data_table_list, .fun=rbind) # combine data sets into one dataframe
+    park_data <- subset(park_data, select=-c(X)) # drop added index column
+  
+    park_data <- dateStrToPosix(park_data)
+    park_data <- addTimeColumns(park_data)
+    park_data <- addWeekdayColumn(park_data)
+  
+  }
+
+  return(park_data)
 }
 
 dateStrToPosix <- function(data){
@@ -179,7 +185,7 @@ getSundayPlot <- function(data){
   getWeekdayPlot(data, "Sunday")
 }
 
-getHourlyBoxPlot <- function(data){
+getHourlyBoxplot <- function(data){
   
   # Divide dataset by hour into groups: 1-3, 4-6, 7-9, 10-12, 1-3, 4-6, 7-9, 10-12
   x_labs <- c("1-3am", "4-6am", "7-9am", "10-12pm", "1-3pm", "4-6pm", "7-9pm", "10-12pm")
