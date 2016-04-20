@@ -1,7 +1,3 @@
-require(ggplot2)
-require(plyr)
-require(lubridate)
-
 main <- function(){
 
   getAvgDailyAvailabilityPlot(park_data)
@@ -14,15 +10,22 @@ main <- function(){
 }
 
 install_libraries <- function(){
-  if(!require(ggplot2)){
-    install.packages("ggplot2", dependencies = TRUE, repos='http://cran.us.r-project.org') 
-  }
-  if(!require(plyr)){
-    install.packages("plyr", dependencies = TRUE, repos='http://cran.us.r-project.org') 
-  }
-  if(!require(lubridate)){
-    install.packages("lubridate", dependencies = TRUE, repos='http://cran.us.r-project.org') 
-  }
+  # if(!require(ggplot2)){
+  #   install.packages("ggplot2", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  # }
+  # if(!require(plyr)){
+  #   install.packages("plyr", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  # }
+  # if(!require(lubridate)){
+  #   install.packages("lubridate", dependencies = TRUE, repos='http://cran.us.r-project.org') 
+  # }
+  list.of.packages <- c("ggplot2", "plyr", "lubridate")
+  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  if(length(new.packages)) install.packages(new.packages)
+  
+  library(ggplot2)
+  library(plyr)
+  library(lubridate)
 }
 
 loadData <- function(){
