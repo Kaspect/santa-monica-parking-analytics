@@ -86,25 +86,56 @@ getAvgPerWeekday <- function(weekday_data){
 getAvgPerWeekdayPlot <- function(data){
   weekday_agg <- getAvgPerWeekday(data)
   week_plot <- ggplot(weekday_agg, aes(x=weekday, y=mean)) + geom_bar(stat="identity")
-  week_plot <- week_plot + labs(title="Average Availability per Weekday", x="Weekdays", y="Avg Parking Availability")
+  week_plot <- week_plot + labs(title="Average Availability per Weekday", x="Weekdays", y="Avg Parking Spots Available")
   return(week_plot)
+}
+
+isWeekday <- function(weekday){
+  weekday_strs <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+  
+  if(weekday_name %in% weekday_strs){
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+# Get Time data only from a Date
+getTime <- function(dtime){
+  time_str <- strftime(dtime, format="%H:%M:%S") #convert weekday times to strings
+  time_only <- as.POSIXct(time_str, format="%H:%M:%S") # only extract hr/min/sec info from time strings
+  return(time_only)
+}
+
+## Lot Availability Per Weekday
+getLotWeekdayPlot <- function(data, lot, weekday_name){
+  if(!isWeekday(weekday_name)){
+    return(NULL)
+  }
+  
+  day_data <- subset(data, Lot == lot & weekday == weekday_name, select = c(Date.Time, Available))
+  day_hr_agg <- ddply(day_data, ~ getTime(Date.Time), summarize, mean=mean(Available))
+  names(day_hr_agg)[1] <- "Date.Time"
+  lotw_plot <- ggplot(day_hr_agg) + geom_point(aes(x=getTime(Date.Time), y=mean))
+  
+  title <- paste(lot, "Parking on a", weekday_name)
+  lotw_plot <- lotw_plot + labs(title=title, x="Time of Day", y="Avg Parking Spots Available")
+  
+  return(lotw_plot)
 }
 
 ## General Weekday Plot function
 getWeekdayPlot <- function(data, weekday_name){
   ### Generate Plot for a given weekday
-  weekday_strs <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-  
-  if(!(weekday_name %in% weekday_strs)){
+  if(!isWeekday(weekday_name)){
     return(NULL)
   }
+  
   ### The weekday's Avg Availbaility
-  day_data <- data[data$weekday == weekday,]
+  day_data <- data[data$weekday == weekday_name,]
   
   # remove month/day/year data from datetime objects - for plotting
-  time_str <- strftime(day_data$Date.Time, format="%H:%M:%S") #convert weekday times to strings
-  time_only <- as.POSIXct(time_str, format="%H:%M:%S") # only extract hr/min/sec info from time strings
-  day_data$time <- time_only
+  
+  day_data$time <- getTime(day_data$Date.Time)
   available_day <- ddply(day_data, c("time"), summarise, mean=mean(Available)) # avg availability per time of day
 
   # create plot
@@ -146,4 +177,55 @@ getSaturdayPlot <- function(data){
 
 getSundayPlot <- function(data){
   getWeekdayPlot(data, "Sunday")
+}
+
+getHourlyBoxPlot <- function(data){
+  
+  # Divide dataset by hour into groups: 1-3, 4-6, 7-9, 10-12, 1-3, 4-6, 7-9, 10-12
+  x_labs <- c("1-3am", "4-6am", "7-9am", "10-12pm", "1-3pm", "4-6pm", "7-9pm", "10-12pm")
+  
+  data$hgroup <- hoursToGroups(data$hour)
+  day_plot <- ggplot(data) + geom_boxplot(aes(x=factor(hgroup), y=Available, group=hgroup))
+  
+  title <- "Box and Whiskers Every 3 hours"
+  day_plot <- day_plot + labs(title=title, x="Time of Day", y="Available Parking Spots")
+  day_plot <- day_plot + scale_x_discrete(breaks=1:8, labels = x_labs)
+  
+  return(day_plot)
+}
+
+getWeekdayBoxPlot <- function(data, weekday_name){
+  
+  weekday_data <- data[data$weekday == weekday_name,]
+  day_plot <- getHourlyBoxPlot(weekday_data)
+  title <- paste("Box and Whiskers Every 3 hours on", weekday_name, sep=" ")
+  day_plot <- day_plot + labs(title=title)
+  return(day_plot)
+
+}
+
+hourToGroup <- function(hour){
+  if(hour %in% 1:3){
+    return(1)
+  } else if(hour %in% 4:6){
+    return(2)
+  } else if(hour %in% 7:9){
+    return(3)
+  } else if(hour %in% 10:12){
+    return(4)
+  } else if(hour %in% 13:15) {
+    return(5)
+  } else if(hour %in% 16:18) {
+    return(6)
+  } else if(hour %in% 19:21) {
+    return(7)
+  } else if(hour %in% c(22, 23, 0)) {
+    return(8)
+  }
+}
+
+hoursToGroups <- function(hours){
+  hours <- lapply(hours, hourToGroup)
+  hours <- unlist(hours)
+  return(hours)
 }
