@@ -215,7 +215,7 @@ getHourlyBoxplot <- function(data){
   data$hgroup <- hoursToGroups(data$hour)
   day_plot <- ggplot(data) + geom_boxplot(aes(x=factor(hgroup), y=Available, group=hgroup))
   
-  title <- "Box and Whiskers Every 3 hours"
+  title <- "Box and Whiskers Every 3 Hours"
   day_plot <- day_plot + labs(title=title, x="Time of Day", y="Available Parking Spots")
   day_plot <- day_plot + scale_x_discrete(breaks=1:8, labels = x_labs)
   
