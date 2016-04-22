@@ -223,13 +223,19 @@ getHourlyBoxplot <- function(data){
 }
 
 getWeekdayBoxPlot <- function(data, weekday_name){
-  
   weekday_data <- data[data$weekday == weekday_name,]
-  day_plot <- getHourlyBoxPlot(weekday_data)
-  title <- paste("Box and Whiskers Every 3 hours on", weekday_name, sep=" ")
+  day_plot <- getHourlyBoxplot(weekday_data)
+  title <- paste("Box and Whiskers Every 3 Hours on", weekday_name, sep=" ")
   day_plot <- day_plot + labs(title=title)
   return(day_plot)
+}
 
+getParkingStructureBoxPlot <- function(data, parking_structure_name){
+  parking_structure_data <- data[data$Lot == parking_structure_name,]
+  day_plot <- getHourlyBoxplot(parking_structure_data)
+  title <- paste("Box and Whiskers Every 3 Hours on", parking_structure_name, sep=" ")
+  day_plot <- day_plot + labs(title=title)
+  return(day_plot)
 }
 
 hourToGroup <- function(hour){
