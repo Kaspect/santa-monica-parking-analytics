@@ -277,3 +277,13 @@ getWeekdayFacet <- function(data){
   g <- ggplot(avg_hourly_table, aes(x=time, y=mean)) + geom_point() + facet_wrap(~weekday)
   return(g)
 }
+
+getStructureFacet <- function(data){
+  structure_table <- data.table(data)
+  setkey(structure_table, Date.Time, Lot)
+  structure_table$time <- getTime(structure_table$Date.Time)
+  avg_hourly_table <- structure_table[, list(mean=mean(Available)), by=list(time, Lot)]
+  
+  g <- ggplot(avg_hourly_table, aes(x=time, y=mean)) + geom_point() + facet_wrap(~Lot)
+  return(g)
+}
