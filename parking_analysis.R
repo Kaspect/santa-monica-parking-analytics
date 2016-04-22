@@ -107,8 +107,12 @@ getAvgPerWeekday <- function(weekday_data){
   return(weekday_agg)
 }
 
+# to call use:
+# x <- loadData()
+# getAvgPerWeekdayPlot(x)
 getAvgPerWeekdayPlot <- function(data){
   weekday_agg <- getAvgPerWeekday(data)
+  # we call ggplot and the first param is the dataset, second is aes- meaning aestetic
   week_plot <- ggplot(weekday_agg, aes(x=weekday, y=mean)) + geom_bar(stat="identity")
   week_plot <- week_plot + labs(title="Average Availability per Weekday", x="Weekdays", y="Avg Parking Spots Available")
   return(week_plot)
