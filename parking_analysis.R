@@ -32,7 +32,10 @@ loadData <- function(){
   # Load Parking Data
   if(!exists("park_data")){
     data_files <- paste("data/",dir(path="data/", pattern="santa_monica.*"), sep = "")
+    # lapply takes in a list and outputs the manipulated list
+    # data_table_list is a list of data frames
     data_table_list <- lapply(data_files, read.table, header=TRUE, sep=",", stringsAsFactors=FALSE)
+    # take  alist of data frames and turning it into a 
     park_data <- ldply(data_table_list, .fun=rbind) # combine data sets into one dataframe
     park_data <- subset(park_data, select=-c(X)) # drop added index column
   
