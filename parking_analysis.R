@@ -19,13 +19,14 @@ install_libraries <- function(){
   # if(!require(lubridate)){
   #   install.packages("lubridate", dependencies = TRUE, repos='http://cran.us.r-project.org') 
   # }
-  list.of.packages <- c("ggplot2", "plyr", "lubridate")
+  list.of.packages <- c("ggplot2", "plyr", "lubridate", "data.table")
   new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
   if(length(new.packages)) install.packages(new.packages, dependencies = TRUE, repos='http://cran.us.r-project.org') 
   
   library(ggplot2)
   library(plyr)
   library(lubridate)
+  library(data.table)
 }
 
 loadData <- function(){
@@ -42,6 +43,8 @@ loadData <- function(){
     park_data <- dateStrToPosix(park_data)
     park_data <- addTimeColumns(park_data)
     park_data <- addWeekdayColumn(park_data)
+    
+    park_data <- data.table(park_data)
   
   }
 
