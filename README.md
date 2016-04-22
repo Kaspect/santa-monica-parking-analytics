@@ -6,7 +6,7 @@ If you've ever tried parking in Santa Monica you understand why this is importan
 `https://github.com/Kaspect/DockerPipeline-SampleRepo`
 
 # Sample command
-`curl -o DockerSampleOutput.zip 52.37.191.157:5000/ -d "data=https://github.com/Kaspect/DockerPipeline-SampleRepo" -X PUT`
+`curl -o DockerSampleOutput.zip 52.35.127.73:5000/ -d "data=https://github.com/Kaspect/DockerPipeline-SampleRepo" -X PUT`
 
 # Goal for SM parking analytics
 Show the data in a beautiful way, that will help us make good decisions when parking in Santa Monica parking structures.
