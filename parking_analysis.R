@@ -263,3 +263,12 @@ hoursToGroups <- function(hours){
   hours <- unlist(hours)
   return(hours)
 }
+
+getWeekdayFacet <- function(data){
+  park_table <- data.table(data)
+  park_table$time <- getTime(park_table$Date.Time)
+  avg_hourly_table <- park_table[, mean(Available), by=list(time, weekday)]
+  
+  g <- ggplot(avg_hourly_table, aes(x=time, y=V1)) + geom_point() + facet_wrap(~weekday)
+  return(g)
+}
