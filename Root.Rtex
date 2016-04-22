@@ -24,8 +24,15 @@
 
 %% a chunk with default options
 %% begin.rcode warning=FALSE, echo =FALSE, dev='my_pdf', fig.ext='pdf', fig.width = 8, fig.height = 8
+% getWeekdayFacet(parking_data)
+%% end.rcode
+
+%% a chunk with default options
+%% begin.rcode warning=FALSE, echo =FALSE, dev='my_pdf', fig.ext='pdf', fig.width = 8, fig.height = 8
 % getHourlyBoxplot(parking_data)
 %% end.rcode
+
+
 
 --Kaspect Labs (John, Brian, Max, Nick and Shuming)
 

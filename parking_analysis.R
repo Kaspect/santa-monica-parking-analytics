@@ -19,13 +19,14 @@ install_libraries <- function(){
   # if(!require(lubridate)){
   #   install.packages("lubridate", dependencies = TRUE, repos='http://cran.us.r-project.org') 
   # }
-  list.of.packages <- c("ggplot2", "plyr", "lubridate")
+  list.of.packages <- c("ggplot2", "plyr", "lubridate", "data.table")
   new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
   if(length(new.packages)) install.packages(new.packages, dependencies = TRUE, repos='http://cran.us.r-project.org') 
   
   library(ggplot2)
   library(plyr)
   library(lubridate)
+  library(data.table)
 }
 
 loadData <- function(){
@@ -42,6 +43,9 @@ loadData <- function(){
     park_data <- dateStrToPosix(park_data)
     park_data <- addTimeColumns(park_data)
     park_data <- addWeekdayColumn(park_data)
+    
+    park_data <- data.table(park_data)
+    setkey(park_data, Date.Time)
   
   }
 
@@ -262,4 +266,14 @@ hoursToGroups <- function(hours){
   hours <- lapply(hours, hourToGroup)
   hours <- unlist(hours)
   return(hours)
+}
+
+getWeekdayFacet <- function(data){
+  park_table <- data.table(data)
+  setkey(park_table, Date.Time, weekday)
+  park_table$time <- getTime(park_table$Date.Time)
+  avg_hourly_table <- park_table[, list(mean = mean(Available)), by=list(time, weekday)]
+  
+  g <- ggplot(avg_hourly_table, aes(x=time, y=mean)) + geom_point() + facet_wrap(~weekday)
+  return(g)
 }
